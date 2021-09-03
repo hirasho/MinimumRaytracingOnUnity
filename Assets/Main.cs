@@ -14,7 +14,6 @@ public class Main : MonoBehaviour
 	[SerializeField] int maxReflection = 2;
 	[SerializeField] bool startButton;
 
-	bool isRendering;
 	Texture2D texture;
 
 	void Start()
