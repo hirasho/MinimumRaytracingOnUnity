@@ -1,0 +1,3 @@
+# MinimumRaytracingOnUnity
+
+Unity上でレイトレの勉強する出発点として作った
