@@ -218,7 +218,7 @@ public class Main : MonoBehaviour
 		// スクリーンの位置を仮想的に確定する
 		// 今fx,fyがそのまま座標として使える距離にスクリーンがあるとすると、
 		// スクリーン縦幅の半分を、スクリーンまでの距離で割ったものが、tan(fieldOfView / 2)に相当する
-		// (screenHeight/2) / z = tan(fieldOfView / 2) ここからDを求める
+		// (screenHeight/2) / z = tan(fieldOfView / 2) ここからzを求める
 		var z = screenHeight * 0.5f / Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
 		// これでレイが定まった
 		// ただしこれはカメラのビュー座標なので、ワールド座標に変換する必要がある。回転クォタニオンを掛けても良いが簡単にやる。
