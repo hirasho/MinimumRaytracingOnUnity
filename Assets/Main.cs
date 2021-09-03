@@ -185,6 +185,7 @@ public class Main : MonoBehaviour
 		return ret;
 	}
 
+	// 二次方程式を解く。実数解がなければfalseを返す。
 	bool SolveQuadratic(float a2, float a1, float a0, out float x0, out float x1)
 	{
 		x0 = x1 = float.MaxValue;
@@ -201,6 +202,7 @@ public class Main : MonoBehaviour
 		return ret;
 	}
 
+	// スクリーンのピクセルの座標を受け取ってレイを返す
 	Ray CreateRay(int x, int y)
 	{
 		// 出発点はカメラのワールド座標
