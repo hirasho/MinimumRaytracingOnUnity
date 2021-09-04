@@ -8,13 +8,19 @@ public class Main : MonoBehaviour
 	[SerializeField] RawImage pictureBox;
 	[SerializeField] Camera mainCamera;
 	[SerializeField] Transform[] objects; // 全て球
+	[SerializeField] Text rayCountText;
+
 	[SerializeField] int screenWidth = 512;
 	[SerializeField] int screenHeight = 512;
 	[SerializeField] int raysPerFrame = 2048;
 	[SerializeField] int maxReflection = 2;
+	[SerializeField] float exposure = 1f;
 	[SerializeField] bool startButton;
 
 	Texture2D texture;
+	double rayCount;
+	Color[] accumulatedPixels;
+	Color[] normalizedPixels;
 
 	void Start()
 	{
@@ -23,8 +29,15 @@ public class Main : MonoBehaviour
 
 	void BeginRender()
 	{
+		accumulatedPixels = new Color[screenWidth * screenHeight];
+		normalizedPixels = new Color[accumulatedPixels.Length];
 		texture = new Texture2D(screenWidth, screenHeight);
 		pictureBox.texture = texture;
+		rayCount = 0.0;
+		for (int i = 0; i < accumulatedPixels.Length; i++)
+		{
+			accumulatedPixels[i] = new Color(0f, 0f, 0f, 1f);
+		}
 	}
 
 	void Update()
@@ -36,6 +49,7 @@ public class Main : MonoBehaviour
 		}
 		
 		Render();
+		rayCountText.text = "RAYS: " + rayCount;
 	}
 
 	void Render()
@@ -46,6 +60,12 @@ public class Main : MonoBehaviour
 			var y = Random.Range(0, screenHeight);
 			Render(x, y);
 		}
+		float normalizedFactor = (screenWidth * screenHeight) / (float)rayCount * exposure;
+		for (int i = 0; i < accumulatedPixels.Length; i++)
+		{
+			normalizedPixels[i] = accumulatedPixels[i] * normalizedFactor;
+		}
+		texture.SetPixels(normalizedPixels);
 		texture.Apply();
 	}
 
@@ -75,7 +95,8 @@ public class Main : MonoBehaviour
 				break;
 			}
 		}
-		texture.SetPixel(x, y, color);
+		accumulatedPixels[(y * screenWidth) + x] += color;
+		rayCount += 1.0;
 	}
 
 	// 何かに当たれば当たったobjectのtransformを返し、reflectedRayに反射rayを返す
