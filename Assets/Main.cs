@@ -74,6 +74,7 @@ public class Main : MonoBehaviour
 		int x, y;
 		var ray = GenerateRay(out x, out y);
 		Color color = new Color(0f, 0f, 0f, 1f); // 黒
+		Color albedo = new Color(1f, 1f, 1f, 1f); // 白
 		// 世界との交差判定を行い、規定回数反射する間にライトに当たれば白、当たらなければ黒を返す
 		for (int i = 0; i < maxReflection; i++)
 		{
@@ -81,15 +82,18 @@ public class Main : MonoBehaviour
 			var hitObject = CastRay(ray, out reflectedRay);
 			if (hitObject != null) // 何かに当たった
 			{
-				if (hitObject.gameObject.name == "Light") // それがライトなら色を出力して抜ける
+				var renderer = hitObject.gameObject.GetComponent<Renderer>();
+				if (renderer != null)
 				{
-					color = new Color(1f, 1f, 1f, 1f);
-					break;
+					var material = renderer.sharedMaterial;
+					var materialAlbedo = material.GetColor("_Color");
+					var materialEmission = material.GetColor("_EmissionColor");
+					// こいつが光っている値は、ここまでのalbedoを乗じて加算
+					color += materialEmission * albedo;
+					// albedoを更新
+					albedo *= materialAlbedo;
 				}
-				else // 違うものに当たったので反射して継続
-				{
-					ray = reflectedRay;
-				}
+				ray = reflectedRay;
 			}
 			else // 何にも当たらなかった。抜ける。
 			{
