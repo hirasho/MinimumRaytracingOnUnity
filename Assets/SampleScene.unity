@@ -567,13 +567,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.07, y: 2.03, z: -12.44}
+  m_LocalRotation: {x: 0.08715578, y: 0, z: 0, w: 0.9961947}
+  m_LocalPosition: {x: -2.07, y: 3, z: -12.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
 --- !u!1 &1162176034
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,10 +777,10 @@ MonoBehaviour:
   - {fileID: 398588310}
   - {fileID: 49745463}
   rayCountText: {fileID: 579829026}
-  screenWidth: 256
-  screenHeight: 256
+  screenWidth: 1024
+  screenHeight: 1024
   raysPerFrame: 8192
-  maxReflection: 2
+  maxReflection: 3
   exposure: 10
   startButton: 0
 --- !u!4 &1749268283

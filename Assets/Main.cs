@@ -58,7 +58,7 @@ public class Main : MonoBehaviour
 		{
 			var x = Random.Range(0, screenWidth);
 			var y = Random.Range(0, screenHeight);
-			Render(x, y);
+			Sample();
 		}
 		float normalizedFactor = (screenWidth * screenHeight) / (float)rayCount * exposure;
 		for (int i = 0; i < accumulatedPixels.Length; i++)
@@ -69,9 +69,10 @@ public class Main : MonoBehaviour
 		texture.Apply();
 	}
 
-	void Render(int x, int y) // スクリーン座標
+	void Sample() 
 	{
-		var ray = CreateRay(x, y);
+		int x, y;
+		var ray = GenerateRay(out x, out y);
 		Color color = new Color(0f, 0f, 0f, 1f); // 黒
 		// 世界との交差判定を行い、規定回数反射する間にライトに当たれば白、当たらなければ黒を返す
 		for (int i = 0; i < maxReflection; i++)
@@ -223,31 +224,24 @@ public class Main : MonoBehaviour
 		return ret;
 	}
 
-	// スクリーンのピクセルの座標を受け取ってレイを返す
-	Ray CreateRay(int x, int y)
+	// ランダムなレイを生成する。x,yにはスクリーン座標を返す
+	Ray GenerateRay(out int xOut, out int yOut)
 	{
-		// 出発点はカメラのワールド座標
-		Ray ray = new Ray();
-		ray.origin = mainCamera.transform.position;
-		// x,yは左下起点なので、使いやすいように中央起点に直す。それには解像度の半分を引けばいい
-		var fx = x - (screenWidth * 0.5f); // floatにしたいので以下fxとする
-		var fy = y - (screenHeight * 0.5f);
-		// 半ピクセルずらす(幅16でx=8だったら、これは後半の最初のピクセルなので座標としては中心からは0.5ピクセルずれる)
-		fx += 0.5f;
-		fy += 0.5f;
+		var screenPosition = new Vector2(Random.value, Random.value); // [0, 1]
+		screenPosition *= new Vector2(screenWidth, screenHeight); //([0,w], [0,h])
+		xOut = Mathf.Min((int)screenPosition.x, screenWidth - 1);
+		yOut = Mathf.Min((int)screenPosition.y, screenHeight - 1);
 
-		// スクリーンの位置を仮想的に確定する
-		// 今fx,fyがそのまま座標として使える距離にスクリーンがあるとすると、
-		// スクリーン縦幅の半分を、スクリーンまでの距離で割ったものが、tan(fieldOfView / 2)に相当する
-		// (screenHeight/2) / z = tan(fieldOfView / 2) ここからzを求める
+		screenPosition -= new Vector2(screenWidth, screenHeight) * 0.5f; // 半分ずらす
+		// スクリーンとカメラの距離zをfieldOfViewから計算する
+		// tan(fieldOfView / 2) = (screenHeight/2) / z より
 		var z = screenHeight * 0.5f / Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-		// これでレイが定まった
-		// ただしこれはカメラのビュー座標なので、ワールド座標に変換する必要がある。回転クォタニオンを掛けても良いが簡単にやる。
-		var dir = (mainCamera.transform.right * fx)
-			+ (mainCamera.transform.up * fy) 
-			+ (mainCamera.transform.forward * z);
-		ray.direction = dir.normalized;
+		// レイが定まったがこれはビュー座標系なのでワールドに変換する
+		var dir = mainCamera.transform.TransformVector(new Vector3(screenPosition.x, screenPosition.y, z));
 
+		var ray = new Ray();
+		ray.origin = mainCamera.transform.position;
+		ray.direction = dir;
 		return ray;
 	}
 }
